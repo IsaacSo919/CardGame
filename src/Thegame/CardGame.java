@@ -73,6 +73,7 @@ public class CardGame {
             return true;
         }
     }
+
     private static void generateCardPack(int numberOfPlayers, String filename) {
         // Checks whether there is a valid number of players
         if (numberOfPlayers <= 0) {
@@ -80,27 +81,22 @@ public class CardGame {
             return;
         }
 
-        int x = 6; // You can adjust the value of x as needed
+        int maxCardValue = numberOfPlayers + 1; // Maximum face value is the number of players
+        int totalCards = 8 * numberOfPlayers; // Total number of cards
+        int remainingCards = totalCards % maxCardValue; // Calculate remaining cards
 
         try (FileWriter fileWriter = new FileWriter(filename)) {
-            int maxCardValue = 8 * numberOfPlayers / 6;
-            int isThereAnyRemainder = numberOfPlayers % 6;
-
             // Create a list to hold the card values
             List<Integer> cardValues = new ArrayList<>();
 
+            // Generate cards with the specified distribution of face values
             for (int i = 1; i <= maxCardValue; i++) {
-                for (int j = 0; j < 4; j++) { // Repeat each card value four times
-                    cardValues.add(i);
+                int cardCount = totalCards / maxCardValue;
+                if (remainingCards > 0 && i <= remainingCards) {
+                    cardCount++;
                 }
-            }
-
-            // If there is a remainder, add additional cards with different values
-            if (isThereAnyRemainder > 0) {
-                for (int i = 1; i <= isThereAnyRemainder; i++) {
-                    for (int j = 0; j < 4; j++) {
-                        cardValues.add((maxCardValue + 1) * x);
-                    }
+                for (int j = 0; j < cardCount; j++) {
+                    cardValues.add(i);
                 }
             }
 
@@ -122,5 +118,5 @@ public class CardGame {
         System.out.println("Number of players in game : " + numberofplayers + " players");
         String outputfilepath = "card_pack.txt";
         generateCardPack(numberofplayers,outputfilepath);
-    }
+    }
 }
