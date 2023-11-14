@@ -2,6 +2,7 @@ package Thegame;
 
 import java.io.*;
 import java.util.*;
+
 public class CardGame {
     private int numberofPlayers;
 
@@ -12,7 +13,7 @@ public class CardGame {
 
 
     // Function that asks how many players are in the game
-    private static int askForPlayers_and_packlocation() {
+    private static int askForPlayers() {
         int numberOfPlayers = 0; // Initialize to a default value
 
         try {
@@ -26,27 +27,37 @@ public class CardGame {
             scanner.nextLine();
 
             // Asking users for the location of a valid plain input_text file
-            System.out.print("Please enter the location of the pack to load: ");
-            String inputPackLocation = scanner.nextLine();
-            // Check if file exists
-
-            File file = new File(inputPackLocation);
-            if(!file.exists()){
-                System.out.println("File does not exist. Generating a valid card pack...");
-                generateCardPack(numberOfPlayers,inputPackLocation);
-            }else{
-                System.out.println("Checking if input-pack is valid ");
-                ispackvalid(numberOfPlayers,inputPackLocation);
-            }
-            // Close the scanner when you are done using it
-            scanner.close();
+            
         } catch (NumberFormatException e) {
             System.out.println("Invalid number of players. Must be an integer.");
             System.exit(1);
-        } catch (IOException e) {
+        } 
+        return numberOfPlayers;
+    }
+    
+    private static String askForPacklocation(int numberOfPlayers) {
+    	
+    	
+    	Scanner scanner = new Scanner(System.in);
+    	System.out.print("Please enter the location of the pack to load: ");
+        String inputPackLocation = scanner.nextLine();
+        // Check if file exists
+	        try {
+	        File file = new File(inputPackLocation);
+	        if(!file.exists()){
+	            System.out.println("File does not exist. Generating a valid card pack...");
+	            generateCardPack(numberOfPlayers,inputPackLocation);
+	        }else{
+	            System.out.println("Checking if input-pack is valid ");
+	            ispackvalid(numberOfPlayers,inputPackLocation);
+	        }
+	        // Close the scanner when you are done using it
+	        scanner.close();
+        }catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return numberOfPlayers;
+        
+        return (inputPackLocation);
     }
     private static boolean ispackvalid(int numberofPlayers, String inputpacklocation) throws IOException {
         try(BufferedReader reader = new BufferedReader(new FileReader(inputpacklocation))){
@@ -111,12 +122,35 @@ public class CardGame {
             throw new RuntimeException(e);
         }
     }
+    public static void initialize_a_game(int numberOfPlayers, String filename) {
+    	
+    	List<Card> deck = new ArrayList<>();
+    	try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+    	    String line;
+    	    while ((line = br.readLine()) != null) {
+    	        int value = Integer.parseInt(line.trim());
+    	        deck.add(new Card(value));  
+    	        
+    	    }
+    	    for (int i = 0; i < deck.size(); i++) {
+    	        Card card = deck.get(i);
+    	        System.out.println(card.getValue());
+    	    }
+    	} catch (IOException e) {
+    	    e.printStackTrace();
+    	}
+    	
+    }
 
 
     public static void main(String[] args) {
-        int numberofplayers = askForPlayers_and_packlocation();
+        int numberofplayers = askForPlayers();
+        String location = askForPacklocation(numberofplayers);
+//        System.out.println("location:"+location);// test for location returned
         System.out.println("Number of players in game : " + numberofplayers + " players");
         String outputfilepath = "card_pack.txt";
         generateCardPack(numberofplayers,outputfilepath);
+        
+        initialize_a_game(numberofplayers,location);
     }
 }

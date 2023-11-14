@@ -15,5 +15,6 @@ public class Deck {
     public synchronized void addCard(Card card) {
         cards.addLast(card);
     }
+
     //comment 1
 }
