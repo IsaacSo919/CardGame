@@ -1,20 +1,27 @@
 package Thegame;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Deck {
-	private final LinkedList<Card> cards;
+	  private List<Card> cards;
 
-    public Deck() {
-        this.cards = new LinkedList<>();
-    }
+	  public Deck() {
+	      this.cards = new ArrayList<>();
+	  }
 
-    public synchronized Card drawCard() {
-        return cards.pollFirst();
-    }
+	  public Card drawCard() {
+	      return cards.remove(0);
+	  }
 
-    public synchronized void addCard(Card card) {
-        cards.addLast(card);
-    }
+	  public void addCard(Card card) {
+	      cards.add(card);
+	  }
 
-    //comment 1
-}
+	  public int size() {
+	      return cards.size();
+	  }
+	  public List<Card> getCards() {
+		    return new ArrayList<>(cards);
+		}
+	  //comment 1 test source tree
+	}

@@ -2,17 +2,18 @@ package Thegame;
 
 import java.io.*;
 import java.util.*;
-
+import java.util.Queue;
 public class CardGame {
+	//local variables for CardGame
     private int numberofPlayers;
 
-
+    // constructors for CardGame
     public CardGame(int numberofPlayers){
         this.numberofPlayers = numberofPlayers;
     }
 
 
-    // Function that asks how many players are in the game
+//  ----Function that allows user to input the number of players are in the game---------------------
     private static int askForPlayers() {
         int numberOfPlayers = 0; // Initialize to a default value
 
@@ -34,7 +35,7 @@ public class CardGame {
         } 
         return numberOfPlayers;
     }
-    
+//    -----------------------------------------------------------------------------------
     private static String askForPacklocation(int numberOfPlayers) {
     	
     	
@@ -59,6 +60,7 @@ public class CardGame {
         
         return (inputPackLocation);
     }
+//  ---------------------------------------------------------------------------------------------------
     private static boolean ispackvalid(int numberofPlayers, String inputpacklocation) throws IOException {
         try(BufferedReader reader = new BufferedReader(new FileReader(inputpacklocation))){
             // row count must be equal to 8*n;
@@ -84,7 +86,7 @@ public class CardGame {
             return true;
         }
     }
-
+//  ---------------------------------------------------------------------------------------------------
     private static void generateCardPack(int numberOfPlayers, String filename) {
         // Checks whether there is a valid number of players
         if (numberOfPlayers <= 0) {
@@ -122,8 +124,9 @@ public class CardGame {
             throw new RuntimeException(e);
         }
     }
+//  ---------------------------------------------------------------------------------------------------
     public static void initialize_a_game(int numberOfPlayers, String filename) {
-    	
+    	//need a method to check whether the pack is valid
     	List<Card> deck = new ArrayList<>();
     	try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
     	    String line;
@@ -134,15 +137,26 @@ public class CardGame {
     	    }
     	    for (int i = 0; i < deck.size(); i++) {
     	        Card card = deck.get(i);
-    	        System.out.println(card.getValue());
+//    	        System.out.println(card.getValue()); this line is for testing the cards value
     	    }
     	} catch (IOException e) {
     	    e.printStackTrace();
     	}
     	
+    	// distribute
+//    	distributeCards(numberOfPlayers,deck);
     }
+//    public static void distributeCards(int numberOfPlayers,List<Card> deck) {
+//    	
+//    	for (int i = 0; i < numberOfPlayers; i++) {
+//            Player player = new Player("Player " + (i + 1));
+//            player.start();
+//        }
+//    }
 
+  
 
+//  ----------------------------------------MAIN----------------------------------------------------
     public static void main(String[] args) {
         int numberofplayers = askForPlayers();
         String location = askForPacklocation(numberofplayers);
