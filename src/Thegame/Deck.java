@@ -29,5 +29,9 @@ public class Deck {
             lock.unlock();
         }
     }
+    
+    public Stack<Card> getCards() {
+        return deck;
+    }
 }
 

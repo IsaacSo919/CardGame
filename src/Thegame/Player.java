@@ -1,3 +1,5 @@
+package Thegame;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -6,7 +8,11 @@ public class Player implements Runnable {
     private final int playerId;
     private final Deck leftDeck;
     private final Deck playerHand; // Renamed from rightDeck to playerHand
-
+    
+    public Deck getLeftDeck() {
+        return leftDeck;
+    }
+    
     public Player(int playerId, Deck leftDeck, Deck playerHand) {
         this.playerId = playerId;
         this.leftDeck = leftDeck;
@@ -23,15 +29,23 @@ public class Player implements Runnable {
         }
     }
 
-    public void discardCard() {
+    public void discardCard(Player nextPlayer) {
         lock.lock();
         try {
-            Card discardedCard = playerHand.discardNonPreferredCard(playerId);
-            playerHand.addCard(discardedCard);
+            List<Card> hand = playerHand.getCards();
+            for (int i = 0; i < hand.size(); i++) {
+                Card card = hand.get(i);
+                if (card.getFaceValue() != playerId) {
+                    hand.remove(i);
+                    nextPlayer.getLeftDeck().addCard(card);
+                    break;
+                }
+            }
         } finally {
             lock.unlock();
         }
     }
+
 
     private boolean hasWinningHand() {
         List<Card> hand = playerHand.getCards();
