@@ -1,27 +1,33 @@
 package Thegame;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Stack;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Deck {
-	  private List<Card> cards;
+    private final Lock lock = new ReentrantLock();
+    private Stack<Card> deck = new Stack<Card>();
 
-	  public Deck() {
-	      this.cards = new ArrayList<>();
-	  }
+    public Deck() {
+        deck = new Stack<>();
+    }
 
-	  public Card drawCard() {
-	      return cards.remove(0);
-	  }
+    public void addCard(Card card) {
+        lock.lock();
+        try {
+            deck.push(card);
+        } finally {
+            lock.unlock();
+        }
+    }
 
-	  public void addCard(Card card) {
-	      cards.add(card);
-	  }
+    public Card drawCard() {
+        lock.lock();
+        try {
+            return deck.pop();
+        } finally {
+            lock.unlock();
+        }
+    }
+}
 
-	  public int size() {
-	      return cards.size();
-	  }
-	  public List<Card> getCards() {
-		    return new ArrayList<>(cards);
-		}
-	  //comment 1 test source tree
-	}

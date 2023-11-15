@@ -1,14 +1,14 @@
 package Thegame;
 
-public final class Card {
-	
-    private final int value;
+public class Card {
+    private final int faceValue;
 
-    public Card(int value) {
-        this.value = value;
+    public Card(int faceValue) {
+        this.faceValue = faceValue;
     }
 
-    public int getValue() {
-        return value;
+    public int getFaceValue() {
+        return faceValue;
     }
 }
+

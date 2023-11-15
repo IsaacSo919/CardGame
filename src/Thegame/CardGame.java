@@ -141,18 +141,40 @@ public class CardGame {
     	    }
     	} catch (IOException e) {
     	    e.printStackTrace();
-    	}
-    	
-    	// distribute
-//    	distributeCards(numberOfPlayers,deck);
+    	}	
+    	distributeCards(numberOfPlayers,deck);
     }
-//    public static void distributeCards(int numberOfPlayers,List<Card> deck) {
-//    	
-//    	for (int i = 0; i < numberOfPlayers; i++) {
-//            Player player = new Player("Player " + (i + 1));
-//            player.start();
-//        }
-//    }
+    
+    public static void distributeCards(int numberOfPlayers, List<Card> deck) {
+        // Create a list to hold the decks for each player's hand
+        List<Deck> hands = new ArrayList<>();
+
+        // Shuffle the deck
+        Collections.shuffle(deck);
+
+        // Distribute the first 4N cards to the players' hands
+        for (int i = 0; i < numberOfPlayers; i++) {
+            Deck hand = new Deck();
+            for (int j = 0; j < 4; j++) {
+                hand.addCard(deck.remove(deck.size() - 1));
+            }
+            hands.add(hand);
+        }
+
+        // The remaining cards form the initial left deck of the first player
+        Deck initialLeftDeck = new Deck();
+        for (Card card : deck) {
+            initialLeftDeck.addCard(card);
+        }
+
+        // Create a Player object for each player
+        for (int i = 0; i < numberOfPlayers; i++) {
+            Deck rightDeck = hands.get(i);
+            Deck leftDeck = (i == 0) ? initialLeftDeck : hands.get((i - 1) % numberOfPlayers);
+            Player player = new Player(i + 1, leftDeck, rightDeck);
+            // TODO: Create a PlayerThread for this player and start it
+        }
+    }
 
   
 

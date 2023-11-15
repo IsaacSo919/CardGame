@@ -1,48 +1,58 @@
-package Thegame;
-
-import java.util.*;
-import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Player implements Runnable {
-	  private final int preferredValue;
-	  private final Deck leftDeck;
-	  private final Deck rightDeck;
+    private final Lock lock = new ReentrantLock();
+    private final int playerId;
+    private final Deck leftDeck;
+    private final Deck playerHand; // Renamed from rightDeck to playerHand
 
-	  public Player(int preferredValue, Deck leftDeck, Deck rightDeck) {
-	      this.preferredValue = preferredValue;
-	      this.leftDeck = leftDeck;
-	      this.rightDeck = rightDeck;
-	  }
+    public Player(int playerId, Deck leftDeck, Deck playerHand) {
+        this.playerId = playerId;
+        this.leftDeck = leftDeck;
+        this.playerHand = playerHand;
+    }
 
-	  public synchronized void drawCard() {
-	      Card drawnCard = leftDeck.drawCard();
-	      rightDeck.addCard(drawnCard);
-	  }
+    public void drawCard() {
+        lock.lock();
+        try {
+            Card drawnCard = leftDeck.drawCard();
+            playerHand.addCard(drawnCard);
+        } finally {
+            lock.unlock();
+        }
+    }
 
-	  @Override
-	  public void run() {
-	      while (true) {
-	          drawCard();
-	          if (hasWinningHand()) {
-	              System.out.println("Player " + preferredValue + " wins");
-	              System.exit(0);
-	          }
-	      }
-	  }
+    public void discardCard() {
+        lock.lock();
+        try {
+            Card discardedCard = playerHand.discardNonPreferredCard(playerId);
+            playerHand.addCard(discardedCard);
+        } finally {
+            lock.unlock();
+        }
+    }
 
-	  private boolean hasWinningHand() {
-		   List<Card> hand = rightDeck.getCards();
-		   if (hand.size() != 4) {
-		       return false;
-		   }
-		   for (Card card : hand) {
-		       if (card.getValue() != preferredValue) {
-		           return false;
-		       }
-		   }
-		   return true;
-		}
-	}
+    private boolean hasWinningHand() {
+        List<Card> hand = playerHand.getCards();
+        if (hand.size() != 4) {
+            return false;
+        }
+        for (Card card : hand) {
+            if (card.getFaceValue() != preferredValue) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    @Override
+    public void run() {
+        while (!hasWinningHand()) {
+            drawCard();
+            discardCard();
+        }
+        System.out.println("Player " + playerId + " has won!");
+    }
+}
