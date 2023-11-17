@@ -173,8 +173,15 @@ public class CardGame {
             Deck leftDeck = (i == 0) ? initialLeftDeck : hands.get((i - 1) % numberOfPlayers);
             Player player = new Player(i + 1, leftDeck, rightDeck);
             // TODO: Create a PlayerThread for this player and start it
+            PlayerThread playerThread = new PlayerThread(player);
+            playerThread.start();
         }
-    }
+
+
+
+
+        }
+
 
   
 
