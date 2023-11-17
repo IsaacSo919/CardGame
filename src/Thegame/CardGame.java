@@ -166,13 +166,16 @@ public class CardGame {
         for (Card card : deck) {
             initialLeftDeck.addCard(card);
         }
-
+        List<Player> allPlayers = new ArrayList<>();
         // Create a Player object for each player
         for (int i = 0; i < numberOfPlayers; i++) {
             Deck rightDeck = hands.get(i);
             Deck leftDeck = (i == 0) ? initialLeftDeck : hands.get((i - 1) % numberOfPlayers);
             Player player = new Player(i + 1, leftDeck, rightDeck);
-            // TODO: Create a PlayerThread for this player and start it
+            allPlayers.add(player);
+        }
+        for (Player player : allPlayers) {
+            player.setAllPlayers(allPlayers);
             PlayerThread playerThread = new PlayerThread(player);
             playerThread.start();
         }

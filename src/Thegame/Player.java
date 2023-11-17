@@ -8,7 +8,8 @@ public class Player implements Runnable {
     private final int playerId;
     private final Deck leftDeck;
     private final Deck playerHand; // Renamed from rightDeck to playerHand
-    
+
+    private List<Player> allPlayers;
     public Deck getLeftDeck() {
         return leftDeck;
     }
@@ -17,6 +18,7 @@ public class Player implements Runnable {
         this.playerId = playerId;
         this.leftDeck = leftDeck;
         this.playerHand = playerHand;
+        this.allPlayers = allPlayers;
     }
 
     public void drawCard() {
@@ -57,8 +59,14 @@ public class Player implements Runnable {
         return true;
     }
 
-
-
+    private Player getNextPlayer() {
+        int currentIndex = allPlayers.indexOf(this);
+        int nextIndex = (currentIndex + 1) % allPlayers.size();
+        return allPlayers.get(nextIndex);
+    }
+    public void setAllPlayers(List<Player> allPlayers) {
+        this.allPlayers = allPlayers;
+    }
 
 
     @Override
