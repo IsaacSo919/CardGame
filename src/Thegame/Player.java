@@ -49,11 +49,8 @@ public class Player implements Runnable {
 
     private boolean hasWinningHand() {
         List<Card> hand = playerHand.getCards();
-        if (hand.size() != 4) {
-            return false;
-        }
         for (Card card : hand) {
-            if (card.getFaceValue() != preferredValue) {
+            if (card.getFaceValue() != playerId) {
                 return false;
             }
         }
@@ -61,11 +58,14 @@ public class Player implements Runnable {
     }
 
 
+
     @Override
     public void run() {
         while (!hasWinningHand()) {
             drawCard();
-            discardCard();
+            // Assuming you have a getNextPlayer() method to get the next player in the game
+            Player nextPlayer = getNextPlayer();
+            discardCard(nextPlayer);
         }
         System.out.println("Player " + playerId + " has won!");
     }
