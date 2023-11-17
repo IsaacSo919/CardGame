@@ -13,8 +13,8 @@ public class Player implements Runnable {
     public Deck getLeftDeck() {
         return leftDeck;
     }
-    
-    public Player(int playerId, Deck leftDeck, Deck playerHand) {
+
+    public Player(int playerId, Deck leftDeck, Deck playerHand, List<Player> allPlayers) {
         this.playerId = playerId;
         this.leftDeck = leftDeck;
         this.playerHand = playerHand;
@@ -24,8 +24,10 @@ public class Player implements Runnable {
     public void drawCard() {
         lock.lock();
         try {
-            Card drawnCard = leftDeck.drawCard();
-            playerHand.addCard(drawnCard);
+            if (!leftDeck.isEmpty()) {
+                Card drawnCard = leftDeck.drawCard();
+                playerHand.addCard(drawnCard);
+            }
         } finally {
             lock.unlock();
         }
@@ -49,14 +51,20 @@ public class Player implements Runnable {
     }
 
 
+
     private boolean hasWinningHand() {
-        List<Card> hand = playerHand.getCards();
-        for (Card card : hand) {
-            if (card.getFaceValue() != playerId) {
-                return false;
+        lock.lock();
+        try {
+            List<Card> hand = playerHand.getCards();
+            for (Card card : hand) {
+                if (card.getFaceValue() != playerId) {
+                    return false;
+                }
             }
+            return true;
+        } finally {
+            lock.unlock();
         }
-        return true;
     }
 
     private Player getNextPlayer() {

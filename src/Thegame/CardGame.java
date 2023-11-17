@@ -171,7 +171,7 @@ public class CardGame {
         for (int i = 0; i < numberOfPlayers; i++) {
             Deck rightDeck = hands.get(i);
             Deck leftDeck = (i == 0) ? initialLeftDeck : hands.get((i - 1) % numberOfPlayers);
-            Player player = new Player(i + 1, leftDeck, rightDeck);
+            Player player = new Player(i + 1, leftDeck, rightDeck, allPlayers);
             allPlayers.add(player);
         }
         for (Player player : allPlayers) {

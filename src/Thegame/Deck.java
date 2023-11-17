@@ -29,7 +29,9 @@ public class Deck {
             lock.unlock();
         }
     }
-    
+    public boolean isEmpty() {
+        return deck.isEmpty();
+    }
     public Stack<Card> getCards() {
         return deck;
     }
