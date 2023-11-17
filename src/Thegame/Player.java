@@ -21,7 +21,7 @@ public class Player implements Runnable {
         this.allPlayers = allPlayers;
     }
 
-    public void drawCard() {
+    public synchronized void drawCard() {
         lock.lock();
         try {
             if (!leftDeck.isEmpty()) {
@@ -33,7 +33,7 @@ public class Player implements Runnable {
         }
     }
 
-    public void discardCard(Player nextPlayer) {
+    public synchronized void discardCard(Player nextPlayer) {
         lock.lock();
         try {
             List<Card> hand = playerHand.getCards();
@@ -52,7 +52,7 @@ public class Player implements Runnable {
 
 
 
-    private boolean hasWinningHand() {
+    private synchronized boolean hasWinningHand() {
         lock.lock();
         try {
             List<Card> hand = playerHand.getCards();
