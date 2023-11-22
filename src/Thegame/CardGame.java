@@ -2,19 +2,20 @@ package Thegame;
 
 import java.io.*;
 import java.util.*;
-import java.util.Queue;
 public class CardGame {
 	//local variables for CardGame
-    private int numberofPlayers;
+    private final int numberofPlayers;
+    private List<Player> allPlayers;
 
     // constructors for CardGame
-    public CardGame(int numberofPlayers){
-        this.numberofPlayers = numberofPlayers;
+    public CardGame(int numberOfPlayers){
+        this.numberofPlayers = numberOfPlayers;
+        this.allPlayers = new ArrayList<>();  // Initialize the list in the constructor
     }
 
 
 //  ----Function that allows user to input the number of players are in the game---------------------
-    private static int askForPlayers() {
+    private static  int askForPlayers() {
         int numberOfPlayers = 0; // Initialize to a default value
 
         try {
@@ -50,7 +51,7 @@ public class CardGame {
 	            generateCardPack(numberOfPlayers,inputPackLocation);
 	        }else{
 	            System.out.println("Checking if input-pack is valid ");
-	            ispackvalid(numberOfPlayers,inputPackLocation);
+	            ispackvalid(numberOfPlayers,inputPackLocation); //we need an exception here
 	        }
 	        // Close the scanner when you are done using it
 	        scanner.close();
@@ -125,27 +126,21 @@ public class CardGame {
         }
     }
 //  ---------------------------------------------------------------------------------------------------
-    public static void initialize_a_game(int numberOfPlayers, String filename) {
-    	//need a method to check whether the pack is valid
-    	List<Card> deck = new ArrayList<>();
-    	try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-    	    String line;
-    	    while ((line = br.readLine()) != null) {
-    	        int value = Integer.parseInt(line.trim());
-    	        deck.add(new Card(value));  
-    	        
-    	    }
-    	    for (int i = 0; i < deck.size(); i++) {
-    	        Card card = deck.get(i);
-//    	        System.out.println(card.getValue()); this line is for testing the cards value
-    	    }
-    	} catch (IOException e) {
-    	    e.printStackTrace();
-    	}	
-    	distributeCards(numberOfPlayers,deck);
+    public void initialize_a_game(String filename) {
+        List<Card> deck = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                int value = Integer.parseInt(line.trim());
+                deck.add(new Card(value));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        distributeCards(deck);
     }
     
-    public static void distributeCards(int numberOfPlayers, List<Card> deck) {
+    public void distributeCards(List<Card> deck) {
         // Create a list to hold the decks for each player's hand
         List<Deck> hands = new ArrayList<>();
 
@@ -153,7 +148,7 @@ public class CardGame {
         Collections.shuffle(deck);
 
         // Distribute the first 4N cards to the players' hands
-        for (int i = 0; i < numberOfPlayers; i++) {
+        for (int i = 0; i < numberofPlayers; i++) {
             Deck hand = new Deck();
             for (int j = 0; j < 4; j++) {
                 hand.addCard(deck.remove(deck.size() - 1));
@@ -166,25 +161,27 @@ public class CardGame {
         for (Card card : deck) {
             initialLeftDeck.addCard(card);
         }
-        List<Player> allPlayers = new ArrayList<>();
+
         // Create a Player object for each player
-        for (int i = 0; i < numberOfPlayers; i++) {
+        for (int i = 0; i < numberofPlayers; i++) {
             Deck rightDeck = hands.get(i);
-            Deck leftDeck = (i == 0) ? initialLeftDeck : hands.get((i - 1) % numberOfPlayers);
-            Player player = new Player(i + 1, leftDeck, rightDeck, allPlayers);
+            Deck leftDeck = (i == 0) ? initialLeftDeck : hands.get((i - 1) % numberofPlayers);
+            Player player = new Player(i + 1, leftDeck, rightDeck, allPlayers, this);  // Pass 'this' as the CardGame instance
             allPlayers.add(player);
         }
+
         for (Player player : allPlayers) {
             player.setAllPlayers(allPlayers);
             PlayerThread playerThread = new PlayerThread(player);
             playerThread.start();
         }
-
-
-
-
+    }
+    public void endGame() {
+        System.out.println("The game has ended.");
+        for (Player player : allPlayers) {
+            player.closeWriter();
         }
-
+    }
 
   
 
@@ -196,7 +193,9 @@ public class CardGame {
         System.out.println("Number of players in game : " + numberofplayers + " players");
         String outputfilepath = "card_pack.txt";
         generateCardPack(numberofplayers,outputfilepath);
-        
-        initialize_a_game(numberofplayers,location);
+        CardGame game = new CardGame(numberofplayers);
+        game.initialize_a_game(location);
+
+
     }
 }

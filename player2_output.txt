@@ -1,0 +1,9 @@
+Player 2 draws a card from left deck.
+Player 2 discards a card to next player.
+Player 2 draws a card from left deck.
+Player 2 discards a card to next player.
+Player 2 draws a card from left deck.
+Player 2 discards a card to next player.
+Player 2 draws a card from left deck.
+Player 2 discards a card to next player.
+Player 2 has a winning hand.

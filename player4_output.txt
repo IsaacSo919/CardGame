@@ -1,0 +1,15 @@
+Player 4 draws a card from left deck.
+Player 4 discards a card to next player.
+Player 4 draws a card from left deck.
+Player 4 discards a card to next player.
+Player 4 draws a card from left deck.
+Player 4 discards a card to next player.
+Player 4 draws a card from left deck.
+Player 4 discards a card to next player.
+Player 4 draws a card from left deck.
+Player 4 discards a card to next player.
+Player 4 draws a card from left deck.
+Player 4 discards a card to next player.
+Player 4 draws a card from left deck.
+Player 4 discards a card to next player.
+Player 4 has a winning hand.
