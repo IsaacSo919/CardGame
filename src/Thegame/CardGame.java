@@ -29,17 +29,17 @@ public class CardGame {
             scanner.nextLine();
 
             // Asking users for the location of a valid plain input_text file
-            
+
         } catch (NumberFormatException e) {
             System.out.println("Invalid number of players. Must be an integer.");
             System.exit(1);
-        } 
+        }
         return numberOfPlayers;
     }
 //    -----------------------------------------------------------------------------------
     private static String askForPacklocation(int numberOfPlayers) {
-    	
-    	
+
+
     	Scanner scanner = new Scanner(System.in);
     	System.out.print("Please enter the location of the pack to load: ");
         String inputPackLocation = scanner.nextLine();
@@ -58,7 +58,7 @@ public class CardGame {
         }catch (IOException e) {
             throw new RuntimeException(e);
         }
-        
+
         return (inputPackLocation);
     }
 //  ---------------------------------------------------------------------------------------------------
@@ -139,9 +139,12 @@ public class CardGame {
         }
         distributeCards(deck);
     }
-    
+
     public void distributeCards(List<Card> deck) {
         // Create a list to hold the decks for each player's hand
+//        for (Card dick:deck){
+//            System.out.println("distributeCards() cards value:" + dick.getFaceValue());
+//        }
         List<Deck> hands = new ArrayList<>();
 
         // Shuffle the deck
@@ -178,12 +181,9 @@ public class CardGame {
     }
     public void endGame() {
         System.out.println("The game has ended.");
-        for (Player player : allPlayers) {
-            player.closeWriter();
-        }
     }
 
-  
+
 
 //  ----------------------------------------MAIN----------------------------------------------------
     public static void main(String[] args) {
@@ -195,6 +195,7 @@ public class CardGame {
         generateCardPack(numberofplayers,outputfilepath);
         CardGame game = new CardGame(numberofplayers);
         game.initialize_a_game(location);
+
 
 
     }

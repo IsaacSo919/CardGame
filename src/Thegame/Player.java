@@ -126,6 +126,7 @@ public class Player implements Runnable {
                 discardCard(nextPlayer);
             }
             System.out.println("Player " + playerId + " has won!");
-            game.endGame();
+            closeWriter();
+
         }
     }
