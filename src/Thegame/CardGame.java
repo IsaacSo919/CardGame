@@ -95,7 +95,7 @@ public class CardGame {
             return;
         }
 
-        int maxCardValue = numberOfPlayers + 1; // Maximum face value is the number of players
+        int maxCardValue = numberOfPlayers; // Maximum face value is the number of players
         int totalCards = 8 * numberOfPlayers; // Total number of cards
         int remainingCards = totalCards % maxCardValue; // Calculate remaining cards
 
@@ -139,18 +139,20 @@ public class CardGame {
         }
         distributeCards(deck);
     }
-
     public void distributeCards(List<Card> deck) {
         // Create a list to hold the decks for each player's hand
+//        testing---------------------------------------------
+//        System.out.println("Before distributing the cards");
 //        for (Card dick:deck){
-//            System.out.println("distributeCards() cards value:" + dick.getFaceValue());
+//            System.out.println( dick.getFaceValue());
 //        }
+//        testing---------------------------------------------
         List<Deck> hands = new ArrayList<>();
 
         // Shuffle the deck
         Collections.shuffle(deck);
 
-        // Distribute the first 4N cards to the players' hands
+        // Distribute 4 cards to each players' hands
         for (int i = 0; i < numberofPlayers; i++) {
             Deck hand = new Deck();
             for (int j = 0; j < 4; j++) {
@@ -159,17 +161,20 @@ public class CardGame {
             hands.add(hand);
         }
 
-        // The remaining cards form the initial left deck of the first player
-        Deck initialLeftDeck = new Deck();
-        for (Card card : deck) {
-            initialLeftDeck.addCard(card);
-        }
-
         // Create a Player object for each player
         for (int i = 0; i < numberofPlayers; i++) {
             Deck rightDeck = hands.get(i);
-            Deck leftDeck = (i == 0) ? initialLeftDeck : hands.get((i - 1) % numberofPlayers);
-            Player player = new Player(i + 1, leftDeck, rightDeck, allPlayers, this);  // Pass 'this' as the CardGame instance
+            Deck leftDeck = hands.get((i + numberofPlayers - 1) % numberofPlayers); // Use the hand of the previous player as the left deck
+            Player player = new Player(i + 1, leftDeck, rightDeck, allPlayers, this);
+            System.out.println("Player"+(i+1));
+            System.out.println("leftDeck");
+            for (Card card: leftDeck.getCards()){
+                System.out.println(card.getFaceValue());
+            }
+            System.out.println("RightDeck");
+            for (Card card: rightDeck.getCards()){
+                System.out.println(card.getFaceValue());
+            }
             allPlayers.add(player);
         }
 
@@ -179,6 +184,9 @@ public class CardGame {
             playerThread.start();
         }
     }
+
+
+
     public void endGame() {
         System.out.println("The game has ended.");
     }
@@ -195,6 +203,7 @@ public class CardGame {
         generateCardPack(numberofplayers,outputfilepath);
         CardGame game = new CardGame(numberofplayers);
         game.initialize_a_game(location);
+
 
 
 

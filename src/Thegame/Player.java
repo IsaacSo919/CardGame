@@ -21,7 +21,9 @@ public class Player implements Runnable {
     public Deck getLeftDeck() {
         return leftDeck;
     }
-
+    public Deck getPlayerHand() {
+        return playerHand;
+    }
     public Player(int playerId, Deck leftDeck, Deck playerHand, List<Player> allPlayers,CardGame game) {
         this.playerId = playerId;
         this.leftDeck = leftDeck;

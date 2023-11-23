@@ -29,6 +29,14 @@ public class Deck {
             lock.unlock();
         }
     }
+    public Card dealCard() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Deck is empty");
+        }
+
+        // Remove and return the top card (last card in the list)
+        return deck.remove(deck.size() - 1);
+    }
     public boolean isEmpty() {
         return deck.isEmpty();
     }
