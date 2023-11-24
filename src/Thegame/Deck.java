@@ -1,47 +1,51 @@
 package Thegame;
 
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Deck {
     private final Lock lock = new ReentrantLock();
-    private Stack<Card> deck = new Stack<Card>();
-
-    public Deck() {
-        deck = new Stack<>();
+    private Queue <Card> decks;
+    private int deck_No;
+    public Deck(int No) {
+        this.decks = new LinkedList<Card>();
+        this.deck_No = No;
     }
 
-    public void addCard(Card card) {
+    public void addToDeck(Card card) {
         lock.lock();
         try {
-            deck.push(card);
+            decks.add(card);
         } finally {
             lock.unlock();
         }
     }
 
-    public Card drawCard() {
+
+    public int getDeck_No(){
+        return deck_No;
+    }
+    public int GetValueTopCard(){
+        assert decks.peek() != null;
+        int faceValue = decks.peek().getFaceValue();
+        return faceValue;
+    }
+    public Card drawCardTopCard() {
         lock.lock();
         try {
-            return deck.pop();
+            return decks.poll();
         } finally {
             lock.unlock();
         }
     }
-    public Card dealCard() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Deck is empty");
-        }
 
-        // Remove and return the top card (last card in the list)
-        return deck.remove(deck.size() - 1);
-    }
     public boolean isEmpty() {
-        return deck.isEmpty();
+        return decks.isEmpty();
     }
-    public Stack<Card> getCards() {
-        return deck;
-    }
+
+
+
 }
 
