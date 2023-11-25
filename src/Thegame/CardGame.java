@@ -4,15 +4,15 @@ import java.io.*;
 import java.util.*;
 public class CardGame {
 	//local variables for CardGame
-    private static int numberofPlayers = 0;
-    private List<Player> allPlayers;
+    private static int numberofPlayers ;
+
 
 
 
     // constructors for CardGame
     public CardGame(int numberOfPlayers){
         this.numberofPlayers = numberOfPlayers;
-        this.allPlayers = new ArrayList<>();  // Initialize the list in the constructor
+         // Initialize the list in the constructor
     }
 
 
@@ -21,7 +21,7 @@ public class CardGame {
         int numberOfPlayers = 0; // Initialize to a default value
 
         try {
-            while((numberOfPlayers == 0)||(numberOfPlayers <=2)){// New Scanner input
+            while((numberOfPlayers <= 2)){// New Scanner input
                 if (numberOfPlayers == 0){
                     System.out.println("numberOfPlayers cannot be equal 0");
                 } else if (numberOfPlayers <=2) {
@@ -218,8 +218,8 @@ public class CardGame {
         generateCardPack(numberofplayers,outputfilepath);
         CardGame game = new CardGame(numberofplayers);
         ArrayList<Card> pack = (ArrayList<Card>) game.initialize_a_game(location);
-        createPlayers(numberofplayers,players);
         createDeck(numberofPlayers,decks);
+        createPlayers(numberofplayers,players);
         distributeCards(pack ,players, decks);
 
         for(Player player:players) {
