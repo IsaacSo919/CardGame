@@ -1,5 +1,6 @@
 package Thegame;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,9 +15,11 @@ public class Player extends Thread {
     private Deck leftDeck;
     private Deck rightDeck;
     private FileWriter player_output;
-    private boolean isWriterClosed = false;
+    private FileWriter deck_output;
+    private boolean isPlayerWriterClosed = false;
+    private boolean isDeckWriterClosed = false;
     private boolean hasWon = false;
-    private CardGame game ;
+    private CardGame game;
 
     public Player(int No, Deck leftDeck, Deck rightDeck, CardGame game) {
         this.playerId = No;
@@ -52,9 +55,6 @@ public class Player extends Thread {
         playerHand.add(card);
     }
 
-    public boolean isWriterClosed() {
-        return isWriterClosed;
-    }
 
     //Players method----------------------------------------------------
     public void writeInitialHand() {
@@ -63,7 +63,7 @@ public class Player extends Thread {
             initial_Hand += " " + card.getFaceValue();
         }
         initial_Hand += "\n";
-        writeMessage(initial_Hand);
+        writeMessageToPlayer(initial_Hand);
     }
 
     public void current_Hand() {
@@ -72,7 +72,7 @@ public class Player extends Thread {
             current_Hand += " " + card.getFaceValue();
         }
         current_Hand += "\n";
-        writeMessage(current_Hand);
+        writeMessageToPlayer(current_Hand);
     }
 
     public void final_Hand() {
@@ -80,16 +80,16 @@ public class Player extends Thread {
         for (Card card : playerHand) {
             final_Hand += " " + card.getFaceValue();
         }
-        writeMessage(final_Hand);
+        writeMessageToPlayer(final_Hand);
     }
 
     public synchronized void drawCard(Deck d) {
         if (!d.isEmpty()) {
             Card drawnCard = d.drawCardTopCard();
             String playerDraw = "Player " + playerId + " draws a " + drawnCard.getFaceValue()
-                    + " from deck " + d.getDeck_No()+"\n";
+                    + " from deck " + d.getDeck_No() + "\n";
 //            System.out.println(playerDraw);
-            writeMessage(playerDraw);
+            writeMessageToPlayer(playerDraw);// print draw
             playerHand.add(drawnCard);
         }
     }
@@ -99,8 +99,8 @@ public class Player extends Thread {
         for (Card card : playerHand) {
             if (card.getFaceValue() != playerId) {
 //                System.out.println("Player " + playerId + " discards " + card.getFaceValue() + " to deck " + d.getDeck_No());
-                playerDiscards += card.getFaceValue() + " to deck " + d.getDeck_No()+"\n";
-                writeMessage(playerDiscards);
+                playerDiscards += card.getFaceValue() + " to deck " + d.getDeck_No() + "\n";
+                writeMessageToPlayer(playerDiscards);// print discard
                 playerHand.remove(card);
                 d.addToDeck(card);
                 break;
@@ -127,7 +127,7 @@ public class Player extends Thread {
     }
 
 
-    public synchronized void writeMessage(String message) {
+    public synchronized void writeMessageToPlayer(String message) {
         try {
             player_output.write(message);
             player_output.flush(); // Flush to ensure data is written immediately
@@ -136,15 +136,61 @@ public class Player extends Thread {
         }
     }
 
+    public synchronized void writeMessageToDeck(Deck deck) {
+        String deckMessage = ("deck" + deck.getDeck_No() + " contents: ");
+        deckMessage += deck.getDeckContentInString();
+        try {
+            deck_output.write(deckMessage);
+            deck_output.flush(); // Flush to ensure data is written immediately
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void close_player_output() {
-        if (!isWriterClosed) {
+        if (!isPlayerWriterClosed) {
             try {
                 player_output.close();
-                isWriterClosed = true; // Mark the writer as closed
+                isPlayerWriterClosed = true; // Mark the writer as closed
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void close_deck_output() {
+        if (!isDeckWriterClosed) {
+            try {
+                deck_output.close();
+                isDeckWriterClosed = true; // Mark the writer as closed
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void declareWinning() {
+        writeMessageToPlayer("player " + this.playerId + " wins\n");
+        writeMessageToPlayer("player " + this.playerId + " exits\n");
+        writeMessageToPlayer("player " + this.playerId + " final hand:");
+        for (Card card : this.playerHand) {
+            writeMessageToPlayer(" " + card.getFaceValue());
+        }
+    }
+
+    public void declareOthers() {
+        ArrayList<Player> players = game.getPlayers();
+        for (Player player : players) {
+            if (player.playerId != this.playerId) {
+                player.writeMessageToPlayer("player " + this.playerId + " has informed player " + player.playerId + " that player " + this.playerId + " has won\n");
+                player.writeMessageToPlayer("player " + this.playerId + " exits\n");
+                player.writeMessageToPlayer("player " + player.playerId + " hand:");
+                for (Card card : player.getPlayerHand()) {
+                    player.writeMessageToPlayer(" " + card.getFaceValue());
+                }
+            } close_player_output();
+        } close_player_output();
     }
 
     private volatile boolean isRunning = true;
@@ -152,40 +198,53 @@ public class Player extends Thread {
     public void stopThread() {
         isRunning = false;
     }
-//    public void endGame() {
-//        writeMessage("deck", this.playerId, "deck" + this.playerId + " contents: " + deck.getStringOfCardValues());
+
+    public void endGame() {
 //        if (game.winningPlayer.get() == playerId) {
 //            writeMessage("player", this.playerId, "player " + this.playerId + " wins");
 //        } else {
 //            writeMessage("player", this.playerId, "player " + game.winningPlayer.get() + " has informed player " + playerId + " that player " + game.winningPlayer.get() + " has won");
 //        }
 //        writeMessage("player", this.playerId, "player " + this.playerId + " exits");
-//        writeMessage("player", this.playerId, "player " + this.
-//    }
+    }
+
     @Override
     public void run() {
         //threading undone
         writeInitialHand();
-        while (isRunning){
+        while (isRunning) {
 
-                if (hasWinningHand()) {
-                    hasWon = true;
-                    // return true when a player has winning hand, vise versa.
-                    break;
+            if (hasWinningHand()) {
+                hasWon = true;
+                declareWinning();// print winning message
+                declareOthers(); // inform other players by printing a message to them
+                try {
+                    for (Deck deck : game.getDecks()) {
+                        this.deck_output = new FileWriter("deck" + deck.getDeck_No() + "_output.txt");
+                        writeMessageToDeck(deck);// just once when game has finished
+                        close_deck_output();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                if(this.leftDeck.getDecksSize() >= 4 && this.rightDeck.getDecksSize() <= 4 ){
+
+                // return true when a player has winning hand, vise versa.
+                break;
+            }
+            if (this.leftDeck.getDecksSize() >= 4 && this.rightDeck.getDecksSize() <= 4) {
                     /*
                         the size of the deck can be 5, it means a player only draw from left deck
                         when a card in inserted into leftdeck, and it also means when right deck
                         is smaller 4 (still got place left), then a card is insert into it from the player
                     */
-                    drawCard(this.leftDeck);
-                    discardCard(this.rightDeck);
-                    current_Hand();
-                }
-
+                drawCard(this.leftDeck);
+                discardCard(this.rightDeck);
+                current_Hand();
+            }
         }
-        close_player_output();
+        endGame();
+
     }
 
 }

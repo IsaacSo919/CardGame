@@ -7,8 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Deck {
     private final Lock lock = new ReentrantLock();
-    private Queue <Card> decks;
+    private Queue<Card> decks;
     private int deck_No;
+
     public Deck(int No) {
         this.decks = new LinkedList<Card>();
         this.deck_No = No;
@@ -24,14 +25,16 @@ public class Deck {
     }
 
 
-    public int getDeck_No(){
+    public int getDeck_No() {
         return deck_No;
     }
-    public int GetValueTopCard(){
+
+    public int GetValueTopCard() {
         assert decks.peek() != null;
         int faceValue = decks.peek().getFaceValue();
         return faceValue;
     }
+
     public Card drawCardTopCard() {
         lock.lock();
         try {
@@ -39,6 +42,19 @@ public class Deck {
         } finally {
             lock.unlock();
         }
+    }
+
+    public StringBuilder getDeckContentInString() {
+        StringBuilder message = new StringBuilder();
+        for (Card card:this.decks){
+            message.append(card.getFaceValue()+" ");
+        }
+
+        return message;
+    }
+
+    public Queue<Card> getDecks() {
+        return decks;
     }
 
     public boolean isEmpty() {
@@ -49,4 +65,5 @@ public class Deck {
         return decks.size();
     }
 }
+
 

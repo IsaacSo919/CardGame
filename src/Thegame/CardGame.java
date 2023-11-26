@@ -16,13 +16,17 @@ public class CardGame {
         this.pack = this.initialize_a_game(askForPacklocation(numberofPlayers));
         this.players = new ArrayList<Player>();
         this.decks = new ArrayList<Deck>();
-        for (int i = 0; i < numberofPlayers;i++){
-            this.decks.add(new Deck(i+1));
+        for (int i = 0; i < numberofPlayers; i++) {
+            this.decks.add(new Deck(i + 1));
         }
     }
 
     public ArrayList<Player> getPlayers() {
         return players;
+    }
+
+    public ArrayList<Deck> getDecks() {
+        return decks;
     }
 
     //  ----Function that allows user to input the number of players are in the game---------------------
@@ -169,17 +173,15 @@ public class CardGame {
     }
 
     public void createPlayers() {
-        for (int i = 0; i < this.numberofPlayers ; i++) {
-            this.players.add(new Player(i+1, this.decks.get(i), this.decks.get((i+1)%numberofPlayers),this));
+        for (int i = 0; i < this.numberofPlayers; i++) {
+            this.players.add(new Player(i + 1, this.decks.get(i), this.decks.get((i + 1) % numberofPlayers), this));
         }
     }
 
     public void distribute_card_to_playerHand() {
-        System.out.println(this.pack.size());
         int index = 0;
         for (int i = 1; i <= 4; i++) {
             for (Player player : this.players) {
-
                 player.add_card_to_playerHand(this.pack.get(index));// index is pointing which player we are at
                 index++;
             }
@@ -209,31 +211,31 @@ public class CardGame {
         String outputfilepath = "card_pack.txt";
         generateCardPack(numberofplayers, outputfilepath);
         CardGame game = new CardGame(numberofplayers);
+        /* when called, pack is intialize and added contents, however for players and decks(ArrayList),these two is
+        only initialized */
+
         game.createPlayers();
         game.distribute_card_to_playerHand();// Distribute 4 cards to each players' hands
         game.distribute_card_to_deck();
         for (Player player : game.players) {
             player.start();// thread start here!
-            player.writeInitialHand();
         }
         boolean gameEnd = false;
         Player winner = null;
-        while(!gameEnd){
-            for (int i =0 ; i< numberofplayers;i++){
+        while (!gameEnd) {
+            for (int i = 0; i < numberofplayers; i++) {
                 Player player = game.players.get(i);
-                if (player.getHasWon()){
-                    for (Player otherPlayer: game.players){
+                if (player.getHasWon()) {
+                    for (Player otherPlayer : game.players) {
                         otherPlayer.stopThread();
                     }
-                    gameEnd= true;
+                    gameEnd = true;
                     winner = player;
                     break;
                 }
             }
         }
-        System.out.println("Player " + winner.getPlayerId() + " has won!");
-
-
+        System.out.println("Player " + winner.getPlayerId() + " wins!");
 
 
     }
