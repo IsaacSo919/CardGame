@@ -180,6 +180,9 @@ public class Player extends Thread {
     }
 
     public void declareOthers() {
+        /*How this is done is by saving the game object to each of the players,
+        so when this.player declare he wins, this.player can inform other players that he wins
+        the if statement is for excluding this.player also known as the player itself*/
         ArrayList<Player> players = game.getPlayers();
         for (Player player : players) {
             if (player.playerId != this.playerId) {
