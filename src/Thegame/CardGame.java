@@ -58,7 +58,7 @@ public class CardGame {
     }
 
     //    -----------------------------------------------------------------------------------
-    private String askForPacklocation(int numberOfPlayers) {
+    public String askForPacklocation(int numberOfPlayers) {
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Please enter the location of the pack to load: ");

@@ -192,8 +192,8 @@ public class Player extends Thread {
                 for (Card card : player.getPlayerHand()) {
                     player.writeMessageToPlayer(" " + card.getFaceValue());
                 }
-            } close_player_output();
-        } close_player_output();
+            }
+        }
     }
 
     private volatile boolean isRunning = true;
