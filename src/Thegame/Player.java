@@ -84,29 +84,38 @@ public class Player extends Thread {
     }
 
     public synchronized void drawCard(Deck d) {
-        if (!d.isEmpty()) {
-            Card drawnCard = d.drawCardTopCard();
-            String playerDraw = "Player " + playerId + " draws a " + drawnCard.getFaceValue()
-                    + " from deck " + d.getDeck_No() + "\n";
+        lock.lock();
+        try {
+            if (!d.isEmpty()) {
+                Card drawnCard = d.drawCardTopCard();
+                String playerDraw = "Player " + playerId + " draws a " + drawnCard.getFaceValue()
+                        + " from deck " + d.getDeck_No() + "\n";
 //            System.out.println(playerDraw);
-            writeMessageToPlayer(playerDraw);// print draw
-            playerHand.add(drawnCard);
+                writeMessageToPlayer(playerDraw);// print draw
+                playerHand.add(drawnCard);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
     public synchronized void discardCard(Deck d) {
-        String playerDiscards = "player " + playerId + " discards a ";
-        for (Card card : playerHand) {
-            if (card.getFaceValue() != playerId) {
-//                System.out.println("Player " + playerId + " discards " + card.getFaceValue() + " to deck " + d.getDeck_No());
-                playerDiscards += card.getFaceValue() + " to deck " + d.getDeck_No() + "\n";
-                writeMessageToPlayer(playerDiscards);// print discard
-                playerHand.remove(card);
-                d.addToDeck(card);
-                break;
+        lock.lock();
+        try {
+            String playerDiscards = "player " + playerId + " discards a ";
+            for (Card card : playerHand) {
+                if (card.getFaceValue() != playerId) {
+                    //System.out.println("Player " + playerId + " discards " + card.getFaceValue() + " to deck " + d.getDeck_No());
+                    playerDiscards += card.getFaceValue() + " to deck " + d.getDeck_No() + "\n";
+                    writeMessageToPlayer(playerDiscards);// print discard
+                    playerHand.remove(card);
+                    d.addToDeck(card);
+                    break;
+                }
             }
+        } finally {
+            lock.unlock();
         }
-
     }
 
 
@@ -202,14 +211,6 @@ public class Player extends Thread {
         isRunning = false;
     }
 
-    public void endGame() {
-//        if (game.winningPlayer.get() == playerId) {
-//            writeMessage("player", this.playerId, "player " + this.playerId + " wins");
-//        } else {
-//            writeMessage("player", this.playerId, "player " + game.winningPlayer.get() + " has informed player " + playerId + " that player " + game.winningPlayer.get() + " has won");
-//        }
-//        writeMessage("player", this.playerId, "player " + this.playerId + " exits");
-    }
 
     @Override
     public void run() {
@@ -220,7 +221,8 @@ public class Player extends Thread {
             if (hasWinningHand()) {
                 hasWon = true;
                 declareWinning();// print winning message
-                declareOthers(); // inform other players by printing a message to them
+                declareOthers();// inform other players by printing a message to them
+                close_player_output();
                 try {
                     for (Deck deck : game.getDecks()) {
                         this.deck_output = new FileWriter("deck" + deck.getDeck_No() + "_output.txt");
@@ -246,8 +248,6 @@ public class Player extends Thread {
                 current_Hand();
             }
         }
-        endGame();
-
     }
 
 }

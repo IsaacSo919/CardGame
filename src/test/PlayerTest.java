@@ -21,11 +21,10 @@ public class PlayerTest {
     public void setup(){
         leftDeck.addToDeck(card1);
     }
-    @Test
+    @org.junit.jupiter.api.Test
     public void TestGetPlayerId() {
-
         Player player = new Player(10,leftDeck,rightDeck,cardGame);
-        System.out.println(player.getPlayerId());
+        assertEquals(10, player.getPlayerId());
     }
 
 //    @Test
