@@ -116,7 +116,7 @@ public class CardGame {
     }
 
     //  ---------------------------------------------------------------------------------------------------
-    private static void generateCardPack(int numberOfPlayers, String filename) {
+    public static void generateCardPack(int numberOfPlayers, String filename) {
         // Checks whether there is a valid number of players
         if (numberOfPlayers <= 0) {
             System.out.println("Invalid number of players. Please enter a valid number of players");

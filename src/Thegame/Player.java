@@ -222,7 +222,6 @@ public class Player extends Thread {
                 hasWon = true;
                 declareWinning();// print winning message
                 declareOthers();// inform other players by printing a message to them
-                close_player_output();
                 try {
                     for (Deck deck : game.getDecks()) {
                         this.deck_output = new FileWriter("deck" + deck.getDeck_No() + "_output.txt");
