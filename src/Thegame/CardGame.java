@@ -116,7 +116,15 @@ public class CardGame {
     }
 
     //  ---------------------------------------------------------------------------------------------------
-    public static void generateCardPack(int numberOfPlayers, String filename) {
+    public void WriteCardPacktoFile(List<Integer> cardValues, String filename){
+        try (FileWriter fileWriter = new FileWriter(filename)) {
+            for (Integer cardValue : cardValues) {
+                fileWriter.write(cardValue + "\n");// Write shuffled values to the file
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static int generateCardPack(int numberOfPlayers, ) {
         // Checks whether there is a valid number of players
         if (numberOfPlayers <= 0) {
             System.out.println("Invalid number of players. Please enter a valid number of players");
@@ -127,7 +135,7 @@ public class CardGame {
         int totalCards = 8 * numberOfPlayers; // Total number of cards
         int remainingCards = totalCards % maxCardValue; // Calculate remaining cards
 
-        try (FileWriter fileWriter = new FileWriter(filename)) {
+
             // Create a list to hold the card values
             List<Integer> cardValues = new ArrayList<>();
 
@@ -144,15 +152,9 @@ public class CardGame {
 
             // Shuffle the list of card values
             Collections.shuffle(cardValues);
-
-            // Write shuffled values to the file
-            for (Integer cardValue : cardValues) {
-                fileWriter.write(cardValue + "\n"); // Each row contains a single non-negative integer value
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return cardValues;
         }
-    }
+
 
     //  ---------------------------------------------------------------------------------------------------
     public ArrayList<Card> initialize_a_game(String filename) {
@@ -209,7 +211,8 @@ public class CardGame {
         int numberofplayers = askForPlayers();
         System.out.println("Number of players in game : " + numberofplayers + " players");
         String outputfilepath = "card_pack.txt";
-        generateCardPack(numberofplayers, outputfilepath);
+        List<Integer> cardValues = generateCardPack(numberofplayers);
+        WriteCardPacktoFile(cardValues,outputfilepath);
         CardGame game = new CardGame(numberofplayers);
         /* when called, pack is intialize and added contents, however for players and decks(ArrayList),these two is
         only initialized */

@@ -1,4 +1,4 @@
-package Thegame;
+package Test;
 import org.junit.Before;
 
 import org.junit.Test;
@@ -40,5 +40,5 @@ public class CardGameTest {
         testFile.delete();
     }
 
-    // Add more test methods to cover other functionality of the CardGame class.
+
 }

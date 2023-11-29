@@ -20,6 +20,7 @@ public class Player extends Thread {
     private boolean isDeckWriterClosed = false;
     private boolean hasWon = false;
     private CardGame game;
+    private volatile boolean isRunning = true;
 
     public Player(int No, Deck leftDeck, Deck rightDeck, CardGame game) {
         this.playerId = No;
@@ -205,7 +206,7 @@ public class Player extends Thread {
         }
     }
 
-    private volatile boolean isRunning = true;
+
 
     public void stopThread() {
         isRunning = false;
